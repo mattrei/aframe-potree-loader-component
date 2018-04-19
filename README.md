@@ -73,3 +73,6 @@ Then require and use.
 require('aframe');
 require('aframe-potree-loader-component');
 ```
+
+### Implementation notes
+This is basically just a wrapper around PIX4D's [three-potree-loader package](https://github.com/Pix4D/three-potree-loader). They did all the hard work (and saved myself lots of time) of extracting the core loading and rendering functionality of the [Potree point cloud viewer](https://github.com/potree/potree). That's the spirit of open-source. We all build up on each other and adapt to certain needs, in that case point clouds within _WebVR_.
