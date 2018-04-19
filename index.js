@@ -1,9 +1,6 @@
 /* global AFRAME */
 
-//import { PointCloudOctree, Potree } from '@pix4d/three-potree-loader';
 const potreeLoader = require('@pix4d/three-potree-loader')
-
-console.log(potreeLoader)
 
 const PointCloudOctree = potreeLoader.PointCloudOctree;
 const Potree = potreeLoader.Potree;
@@ -38,6 +35,12 @@ AFRAME.registerComponent('potree-loader', {
       type: 'number',
       default: 1
     },
+    minimumNodePixelSize: {
+      default: 150,
+      min: 0,
+      max: 1000,
+      type: 'number'
+    },
     pointSizeType: {
       default: 'adaptive',
       oneOf: Object.values(PointSizeType).filter(v => !Number.isInteger(v)).map(v => v.toLowerCase())
@@ -49,12 +52,6 @@ AFRAME.registerComponent('potree-loader', {
     pointColorType: {
       default: 'rgb',
       oneOf: Object.values(PointColorType).filter(v => !Number.isInteger(v)).map(v => v.toLowerCase())
-    },
-    minimumNodePixelSize: {
-      default: 150,
-      min: 0,
-      max: 1000,
-      type: 'number'
     },
     weighted: {
       default: false,
@@ -97,10 +94,14 @@ AFRAME.registerComponent('potree-loader', {
         
         this._updatePointCloud(data);
 
-        el.emit('modelloaded', pco);
+        el.emit('model-loaded', pco);
 
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+
+        console.warn(err)
+        el.emit('model-error', {src: `${data.src}`});
+      } );
 
     this.potree = potree;
     this.pointClouds = pointClouds;
