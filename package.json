@@ -5,9 +5,9 @@
   "main": "index.js",
   "unpkg": "dist/aframe-potree-loader-component.min.js",
   "scripts": {
-    "dev": "budo index.js:dist/aframe-potree-loader-component.min.js --port 7000 --live --open",
+    "dev": "budo index.js:dist/aframe-potree-loader-component.min.js --port 8000 --live",
     "dist": "npm run rollup && uglifyjs dist/aframe-potree-loader-component.js > dist/aframe-potree-loader-component.min.js",
-    "lint": "semistandard -v | snazzy",
+    "lint": "semistandard -v --fix | snazzy",
     "prepublish": "npm run dist",
     "ghpages": "ghpages",
     "rollup": "rollup index.js --output.format umd --name 'aframe-potree-loader-component' --output.file dist/aframe-potree-loader-component.js",
@@ -27,7 +27,7 @@
     "vr",
     "mozvr",
     "webvr",
-    "potree-loader"
+    "potree"
   ],
   "author": "Matthias Treitler <matthias.treitler@gmail.com>",
   "license": "MIT",
