@@ -14,13 +14,13 @@ For [A-Frame](https://aframe.io).
 | Property | Description | Default Value |
 | -------- | ----------- | ------------- |
 | src       | Url to the PointCloud files. Expects a _cloud.json_            | '' |
-| pointSize | Semantic size of a single point. The lower the more space is between the points, higher values result in low resolution objects. | 1 |
-| minimumNodePixelSize | Pixel size of a point within a node. The lower the more points will be shown.  | 150 |
+| pointSize | Semantic size of a single point. The lower the more space is between the points, higher values result in low resolution objects. Has no performance impact. | 1 |
+| minimumNodePixelSize | Pixel size of a point within a node. The lower the more points will be shown per octree node. Has performance impact. | 150 |
 | pointSizeType | How to point adapts to the camera frustum. Either _fixed_, _adaptive_ or  | _adaptive_ |
 | pointShape | The shape of a single point. Either _square_, _circle_ or  | _sqaure_ |
 | pointColorType | Type of color of a single point in respect of the pointcloud. See for all possible values. | 'rgb' |
 
-The initial position and rotation is specific for each point cloud and has to be set accordingly.
+The initial position and rotation is specific for each point cloud and has to be set accordingly. 
 
 #### Events
 
@@ -28,6 +28,9 @@ The initial position and rotation is specific for each point cloud and has to be
 | --------          | -----------                                                     |
 | model-loaded       | The point cloud had been loaded into the scene                 |
 | model-error        | The point cloud could not be loaded loading                    |
+
+## Notes on fidelity
+_Potree_ automatically adapts the point budget according to the underlying hardware, that said mobile devices are not so well suited for detailed point cloud representations.
 
 ### Installation
 
@@ -50,7 +53,7 @@ Install and use by directly including the [browser files](dist):
 
         pointSize: 1;
         pointColorType: rgb;
-        minimumNodePixelSize: 50;
+        minimumNodePixelSize: 100;
         "
         position="-1 -1 -5"
         rotation="-85 0 0"
