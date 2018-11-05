@@ -1,6 +1,6 @@
 /* global AFRAME */
 
-const potreeLoader = require('@pix4d/three-potree-loader')
+const potreeLoader = require('@pnext/three-loader')
 
 const PointCloudOctree = potreeLoader.PointCloudOctree;
 const Potree = potreeLoader.Potree;
@@ -133,7 +133,14 @@ AFRAME.registerComponent('potree-loader', {
     this.pco.minimumNodePixelSize = data.minimumNodePixelSize;
   },
   
-  remove: function () {},
+  remove: function () {
+    const el = this.el;
+    this.pointClouds.forEach(pco => {
+      el.object3D.remove(pco);
+      pco.dispose();
+    });
+    this.pointClouds.length = 0;
+  },
 
   
   tick: function (time, delta) { 
