@@ -101,7 +101,17 @@ AFRAME.registerComponent('potree-loader', {
         this._updatePointCloud(pco);
         this.system._render()
         
-        console.log('load', pco, pco.children, pco.initialized())
+
+        const box = pco.boundingBox;
+        const boundingSphere = new THREE.Sphere();
+        box.getBoundingSphere(boundingSphere);
+        const center = boundingSphere.center;
+        const radius = boundingSphere.radius;
+
+        const span = 1;
+        const s = (radius === 0 ? 1 : 1.0 / radius) * span;
+        //pco.scale.set(s, s, s);
+
         const obj = new THREE.Object3D();
         obj.add(pco)
         el.setObject3D('mesh', obj)
