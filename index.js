@@ -15,16 +15,14 @@ if (typeof AFRAME === 'undefined') {
 
 AFRAME.registerSystem('potree-loader', {
   schema: {
-
+    pointBudget: {default: 1}
   },
   init: function() {
     const el = this.el;
+    const data = this.data;
     this.potree = new Potree();
-    // TODO us in system
-    const pointBudget = 3;
-    this.potree.pointBudget = pointBudget * 1000000;
+    this.potree.pointBudget = data.pointBudget * 1000000;
     this.pointClouds = [];
-    console.log(el.canvas)
 
     // we need a sepearte renderer otherwise we get strange artifacts
     this.renderer = new THREE.WebGLRenderer({canvas: el.canvas});

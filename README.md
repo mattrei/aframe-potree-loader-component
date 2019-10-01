@@ -22,6 +22,12 @@ For [A-Frame](https://aframe.io).
 
 The initial position and rotation is specific for each point cloud and has to be set accordingly. 
 
+#### Scene Properties
+
+| Property | Description | Default Value |
+| -------- | ----------- | ------------- |
+| pointBudget       | Point Budget in millions of all pointclouds in your scene            | 1 |
+
 #### Events
 
 | Property          | Description                                                     |
@@ -46,10 +52,9 @@ Install and use by directly including the [browser files](dist):
 </head>
 
 <body>
-  <a-scene>
+  <a-scene potree-loader="pointBudget: 1;">
       <a-entity potree-loader="
         src: https://cdn.rawgit.com/potree/potree/develop/pointclouds/lion_takanawa;
-        pointBudget: 1;
 
         pointSize: 1;
         pointColorType: rgb;
