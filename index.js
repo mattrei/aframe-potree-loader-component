@@ -1,4 +1,4 @@
-/* global AFRAME */
+/* global AFRAME THREE */
 
 const potreeLoader = require('@pnext/three-loader')
 
@@ -13,19 +13,46 @@ if (typeof AFRAME === 'undefined') {
   throw new Error('Component attempted to register before AFRAME was available.');
 }
 
-AFRAME.registerSystem('potree', {
+AFRAME.registerSystem('potree-loader', {
   schema: {
 
   },
   init: function() {
+    const el = this.el;
+    this.potree = new Potree();
+    // TODO us in system
+    const pointBudget = 3;
+    this.potree.pointBudget = pointBudget * 1000000;
+    this.pointClouds = [];
+    console.log(el.canvas)
 
+    // we need a sepearte renderer otherwise we get strange artifacts
+    this.renderer = new THREE.WebGLRenderer({canvas: el.canvas});
+    const size = new THREE.Vector2();
+    el.renderer.getSize(size);
+    this.renderer.setSize(size.x, size.y)
+  },
+  getPotree: function() {
+    return this.potree;
+  },
+  addPointCloud: function(pco) {
+    this.pointClouds.push(pco);
+  },
+  removePointCloud: function(pco) {
+    this.pointClouds.forEach(pco => {
+      pco.dispose();
+    });
   },
   tick: function(time, delta) {
-
+    this._render()
+  },
+  _render: function() {
+    const camera = this.el.camera;
+    const result = this.potree.updatePointClouds(this.pointClouds, camera, this.renderer);
+    
   }
 })
 
-//const POINT_CLOUD_BASE_URL = `https://cdn.rawgit.com/potree/potree/develop/pointclouds/lion_takanawa/`;
 AFRAME.registerComponent('potree-loader', {
   schema: {
     src: {
@@ -57,11 +84,6 @@ AFRAME.registerComponent('potree-loader', {
       default: false,
       type: 'boolean'
     },
-    // gradient?
-    pointBudget: {
-      type: 'number',
-      default: 3
-    }
   },
   multiple: false,
   init: function () {
@@ -69,42 +91,30 @@ AFRAME.registerComponent('potree-loader', {
     const data = this.data;
     const el = this.el;
 
-    // Manages the necessary state for loading/updating one or more point clouds.
-    const potree = new Potree();
-    // Show at most 2 million points.
-    potree.pointBudget = data.pointBudget * 1000000;
-    
-    // List of point clouds which we loaded and need to update.
-    const pointClouds = [];
-
+    const potree = this.system.getPotree();
     potree
       .loadPointCloud(
-        // The file name of the point cloud which is to be loaded.
-      'cloud.js',
-      // Given the relative URL of a file, should return a full URL.
-      url => `${data.src}/${url}`,
+        'cloud.js',
+        url => `${data.src}/${url}`,
       )
       .then(pco => {
-        pointClouds.push(pco);
-        
-        //el.setObject3D('mesh', pco)
-        el.object3D.add(pco)
-        
         this.pco = pco;
+        this.system.addPointCloud(pco);
+        this._updatePointCloud(pco);
+        this.system._render()
         
-        this._updatePointCloud(data);
+        console.log('load', pco, pco.children, pco.initialized())
+        const obj = new THREE.Object3D();
+        obj.add(pco)
+        el.setObject3D('mesh', obj)
 
         el.emit('model-loaded', pco);
-
       })
       .catch(err => {
-
         console.warn(err)
         el.emit('model-error', {src: `${data.src}`});
       } );
 
-    this.potree = potree;
-    this.pointClouds = pointClouds;
   },
 
   
@@ -112,42 +122,27 @@ AFRAME.registerComponent('potree-loader', {
     const data = this.data;
     if (AFRAME.utils.deepEqual(data, oldData)) return;
 
-
-          // The point cloud comes with a material which can be customized directly.
-        // Here we just set the size of the points.
     if (this.pco) {
-      this._updatePointCloud(data);
+      this._updatePointCloud(this.pco);
     }
   },
 
-  _updatePointCloud: function (data) {
-    this.pco.material.size = data.pointSize;
+  _updatePointCloud: function (pco) {
+    const data = this.data;
+    pco.material.size = data.pointSize;
 
-    this.pco.material.pointColorType = PointColorType[data.pointColorType.toUpperCase()];
-    this.pco.material.pointShapeType = PointShape[data.pointShape.toUpperCase()];
-    this.pco.material.pointSizeType = PointSizeType[data.pointSizeType.toUpperCase()];
+    pco.material.pointColorType = PointColorType[data.pointColorType.toUpperCase()];
+    pco.material.pointShapeType = PointShape[data.pointShape.toUpperCase()];
+    pco.material.pointSizeType = PointSizeType[data.pointSizeType.toUpperCase()];
 
-    console.log(this.pco.material.pointSizeType)
-    
-
-    this.pco.minimumNodePixelSize = data.minimumNodePixelSize;
+    pco.minimumNodePixelSize = data.minimumNodePixelSize;
   },
   
   remove: function () {
-    const el = this.el;
-    this.pointClouds.forEach(pco => {
-      el.object3D.remove(pco);
-      pco.dispose();
-    });
-    this.pointClouds.length = 0;
+    this.system.removePointCloud(this.pco);
+    //this.el.object3D.remove(pco);
   },
-
   
   tick: function (time, delta) { 
-
-    const renderer = this.el.sceneEl.renderer;
-    const camera = this.el.sceneEl.camera;
-
-    this.potree.updatePointClouds(this.pointClouds, camera, renderer);
-  }
+  },
 });
