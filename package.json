@@ -73,6 +73,6 @@
   },
   "dependencies": {
     "@pnext/three-loader": "^0.1.5",
-    "three": "^0.109.0"
+    "three": "^0.125.0"
   }
 }
