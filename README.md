@@ -17,7 +17,7 @@ For [A-Frame](https://aframe.io).
 | pointSize | Semantic size of a single point. The lower the more space is between the points, higher values result in low resolution objects. Has no performance impact. | 1 |
 | minimumNodePixelSize | Pixel size of a point within a node. The lower the more points will be shown per octree node. Has performance impact. | 150 |
 | pointSizeType | How to point adapts to the camera frustum. Either _fixed_, _adaptive_ or  | _adaptive_ |
-| pointShape | The shape of a single point. Either _square_, _circle_ or  | _sqaure_ |
+| pointShape | The shape of a single point. Either _square_, _circle_ or  | _square_ |
 | pointColorType | Type of color of a single point in respect of the pointcloud. See for all possible values. | 'rgb' |
 
 The initial position and rotation is specific for each point cloud and has to be set accordingly. 
